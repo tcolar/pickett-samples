@@ -1,0 +1,61 @@
+{
+
+	//when doing Go-related things, you usually want to mount your source code
+	"CodeVolume" :{
+		"Directory" : "go", //directory, relative to this file
+		"MountedAt" : "/sample1" //usually use your project name
+	},
+
+	//use this if you want to do optimizations like --rm=false or force a build igoring
+	//cache with --no-cache=true
+	"DockerBuildOptions" : [ "--no-cache=true"],
+
+	//Sources means "sources" in the graph theory sense, no incoming edges so these have
+	//to be created from scratch, based on a Dockerfile
+	"Sources" : [
+		{
+			//this tag includes our go build tools (build from source) and VCS like mercurial and git
+			"Tag" : "sample1/builder",
+			"Directory" : "container/builder",  //directory, relative to this file	
+			"DependsOn" : ["sample1/runner"] 
+		},
+		{
+			//this tag includes all of our vendor (3rd party) libraries
+			"Tag" : "sample1/external",
+			"Directory" : "container/external", //directory, relative to this file
+			"DependsOn" : [ "sample1/builder"] 
+		},
+		{
+			//base image + our system changes (curl + libzmq built from source)
+			"Tag" : "sample1/runner",
+			"Directory" : "container/runner" //directory, relative to this file
+		}
+	],
+
+	//go source code operation
+	"GoBuilds" : [
+		{
+			"RunIn" : "sample1/external",
+			"InstallGoPackages": [ 
+				"sample1/wuclient",  //package name, not a path
+				"sample1/wuserver"   //package name, not a path
+			],
+			"Tag": "build"
+		}
+	],
+
+	//artifacts are things that are extract from one container and placed in a different one
+	"ArtifactBuilds" : [
+		{
+			"RunIn" : "build",
+			"MergeWith" : "sample1/runner",
+			"Artifacts": {
+				//this table maps a build artifact (a path in the build container)
+				//to a result (a path in the candidate container)
+				"/sample1/bin/wuserver": "/wuserver",
+				"/sample1/bin/wuclient": "/wuclient"
+			},
+			"Tag": "candidate"
+		}
+	]
+}
