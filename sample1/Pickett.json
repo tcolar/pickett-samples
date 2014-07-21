@@ -44,14 +44,19 @@
 		}
 	],
 
+	//XXX This is pretty awful.  This *assumes* that the source code is where the
+	//XXX artifact is placed, which is likely only true for some cases.  It further
+	//XXX assumes that you can run cp inside a container to grab the stuff off the
+	//XXX mount point and into the target.
+
 	//artifacts are things that are extract from one container and placed in a different one
 	"ArtifactBuilds" : [
 		{
-			"RunIn" : "build",
+			"RunIn" : "build", //XXXX Because this is hacky, we end up not using this
 			"MergeWith" : "sample1/runner",
 			"Artifacts": {
-				//this table maps a build artifact (a path in the build container)
-				//to a result (a path in the candidate container)
+				//this table maps a build artifact (a path relative to the CodeVolume
+				//declared above) to a destination artifact (path in the merge container).
 				"/sample1/bin/wuserver": "/wuserver",
 				"/sample1/bin/wuclient": "/wuclient"
 			},
