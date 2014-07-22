@@ -1,3 +1,18 @@
+
+//
+// This is an example Pickett.json file for the sample1 programs.  
+
+// The sample1 programs are an exmaple from the zeromq documentation, that runs a client 
+// and server (sub and pub, respectively) that receives/sends bogus weather data.
+//
+// The connectivity is supplied by zeromq which gets installed (libzmq) in the 'sample1/runner'
+// image; the go language bindings are from github.com/pebbe/zeromq4 and are installed
+// in the 'sample1/external' image.  
+//
+// When run, the client connects to the server via TCP and selects a zipcode that it
+// wants to listen for information about.
+//
+// Made with fear and loathing in Oakland, CA: the five-and-dime.
 {
 
 	//when doing Go-related things, you usually want to mount your source code
@@ -8,7 +23,7 @@
 
 	//use this if you want to do optimizations like --rm=false or force a build igoring
 	//cache with --no-cache=true
-	"DockerBuildOptions" : [ "--no-cache=true"],
+	"DockerBuildOptions" : [ "--rm=false"],
 
 	//Sources means "sources" in the graph theory sense, no incoming edges so these have
 	//to be created from scratch, based on a Dockerfile
@@ -62,5 +77,23 @@
 			},
 			"Tag": "candidate"
 		}
-	]
+	],
+	
+	//Layer3 setups are simple IP-based configurations.  If you "run" this setup with 
+	//pickett -run=weather-client it will launch the server container first since
+	//the requested container (weather-client) consumes the server container.  The server is
+	//visible in the client as the hostname server (in /etc/hosts) for IP container.  
+	"Layer3Services" : [
+		{
+			"Name" : "weather-server", //container name will be weather-server
+			"RunIn": "candidate", //which image to boot this from
+			"EntryPoint" : [ "/wuserver" ] //arguments to run
+		},
+		{
+			"Name" : "weather-client", //container will be weather-client
+			"RunIn" : "candidate", //image to run in has no go tooling
+			"EntryPoint" : [ "/wuclient", "94607" ], //made with fear and loathing in Oakland, CA
+			"Consumes" : [ "weather-server"] //this is "linked" into this container
+		}
+	]	
 }

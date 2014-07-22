@@ -1,5 +1,5 @@
 FROM sample1/runner
-MAINTAINER iansmith@acm.org
+MAINTAINER iansmith@igenous.io
 
 ##
 ## The objective here is to create our build tools. We end up re-downloading the

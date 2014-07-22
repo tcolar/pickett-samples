@@ -1,5 +1,5 @@
 FROM sample1/builder
-MAINTAINER "iansmith@acm.org"
+MAINTAINER iansmith@igneous.io
 
 ##
 ## The objective here is to create all 3rd party libaries and set our GOPATH.

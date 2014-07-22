@@ -20,7 +20,6 @@ func main() {
 	publisher, _ := zmq.NewSocket(zmq.PUB)
 	defer publisher.Close()
 	publisher.Bind("tcp://*:5556")
-	publisher.Bind("ipc://weather.ipc")
 
 	//  Initialize random number generator
 	rand.Seed(time.Now().UnixNano())
