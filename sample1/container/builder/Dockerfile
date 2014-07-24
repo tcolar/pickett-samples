@@ -14,6 +14,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential pkg-config git mercurial curl 
 RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 
+# Clean up APT
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 WORKDIR /opt
 RUN hg clone -u release https://code.google.com/p/go
 WORKDIR /opt/go/src

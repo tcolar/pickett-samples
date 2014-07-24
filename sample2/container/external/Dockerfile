@@ -1,7 +1,8 @@
 FROM sample2/gotools
 MAINTAINER iansmith@igneous.io
 
-#gopath is set by the sample2/gotools/Dockerfile
+#because musl-go doesn't have git integration we can't use go get for this. 
+#this way of dealing with externals is horrible.
 
-RUN mkdir -p /vendor/src
 RUN go get github.com/lib/pq
+

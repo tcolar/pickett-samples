@@ -15,21 +15,21 @@
 
 	//use this if you want to do optimizations like --rm=false or force a build igoring
 	//cache with --no-cache=true
-	"DockerBuildOptions" : [ "--rm=false"],
+	"DockerBuildOptions" : [ "--rm=false" ],
 
 	//Sources means "sources" in the graph theory sense, no incoming edges so these have
 	//to be created from scratch, based on a Dockerfile
 	"Sources" : [
 		{
-			//this tag includes our go build tools (build from source) and VCS like mercurial and git
-			"Tag" : "sample2/base",
-			"Directory" : "container/base",  //directory, relative to this file	
-		},
-		{
 			//this tag includes all of our vendor (3rd party) libraries
 			"Tag" : "sample2/external",
 			"Directory" : "container/external", //directory, relative to this file
-			"DependsOn" : [ "sample2/gotools"] 
+			"DependsOn" : [ "sample2/gotools" ] 
+		},
+		{
+			//postgres
+			"Tag" : "sample2/postgres",
+			"Directory" : "container/postgres" //directory, relative to this file
 		},
 		{
 			//go tools
@@ -43,7 +43,7 @@
 		{
 			"RunIn" : "sample2/external",
 			"InstallGoPackages": [ 
-				"sample2/copier",  //package name, not a path
+				"sample2/copier"  //package name, not a path
 			],
 			"Tag": "build"
 		}
@@ -58,11 +58,11 @@
 	"ArtifactBuilds" : [
 		{
 			"RunIn" : "build", //XXXX Because this is hacky, we end up not using this
-			"MergeWith" : "sample2/base",
+			"MergeWith" : "phusion/baseimage",
 			"Artifacts": {
 				//this table maps a build artifact (a path relative to the CodeVolume
 				//declared above) to a destination artifact (path in the merge container).
-				"/sample2/bin/copier": "/copier",
+				"/sample2/bin/copier": "/copier"
 			},
 			"Tag": "candidate"
 		}
@@ -75,14 +75,14 @@
 	"Layer3Services" : [
 		{
 			"Name" : "pgserver", //service name will be pgserver
-			"RunIn": "postgres", //which image to boot this from
-			//we use the built in entry point
+			"RunIn": "sample2/postgres", //which image to boot this from
+			"EntryPoint": ["fart"] //we use the built in entry point
 		},
 		{
 			"Name" : "copier", //container will be weather-client
 			"RunIn" : "candidate", //image to run in has no go tooling
-			"EntryPoint" : [ "/copier", ], //made with fear and loathing in Oakland, CA
-			"Consumes" : [ "pgserver"] //this is "linked" into this container
+			"EntryPoint" : [ "/copier" ], //made with fear and loathing in Oakland, CA
+			"Consumes" : [ "pgserver" ] //this is "linked" into this container
 		}
 	]	
 }

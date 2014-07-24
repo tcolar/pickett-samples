@@ -1,5 +1,18 @@
-FROM ubuntu:trusty
+FROM phusion/baseimage:latest
 MAINTAINER iansmith@igneous.io
+ENV HOME /root
+
+
+# Set correct environment variables.
+ENV HOME /root
+
+# Regenerate SSH host keys. baseimage-docker does not contain any, so you
+# have to do that yourself. You may also comment out this instruction; the
+# init system will auto-generate one during boot.
+RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
+
+# Use baseimage-docker's init system.
+CMD ["/sbin/my_init"]
 
 ##
 ## The objective here is have a system with just trusty plus libzmq version 4.
@@ -17,6 +30,10 @@ WORKDIR /tmp/zmq/zeromq-4.0.4/
 RUN ./configure
 RUN make install
 RUN rm -rf /tmp/zmq
-RUN DEBIAN_FRONTEND=noninteractive apt-get remove -y build-essential curl
-RUN DEBIAN_FRONTEND=noninteractive apt-get autoremove -y
+
+
+# Clean up APT when done.
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+#make workdir homedir
 WORKDIR /
