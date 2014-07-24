@@ -37,3 +37,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #make workdir homedir
 WORKDIR /
+
+### XXXX THIS IS HORRIBLE! Why is this necessary!?!
+ENV LD_LIBRARY_PATH /usr/local/lib
