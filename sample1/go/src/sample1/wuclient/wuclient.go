@@ -32,7 +32,7 @@ func main() {
 	//  Process 100 updates
 	total_temp := 0
 	update_nbr := 0
-	for update_nbr < 100 {
+	for update_nbr < 20 {
 		msg, _ := subscriber.Recv(0)
 		fmt.Printf(".")
 		if msgs := strings.Fields(msg); len(msgs) > 1 {
@@ -42,5 +42,5 @@ func main() {
 			}
 		}
 	}
-	fmt.Printf("\nAverage temperature for zipcode '%s' was %dF \n\n", strings.TrimSpace(filter), total_temp/update_nbr)
+	fmt.Printf("\nAverage temperature for zipcode '%s' was %dC \n\n", strings.TrimSpace(filter), total_temp/update_nbr)
 }
