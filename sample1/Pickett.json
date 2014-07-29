@@ -27,7 +27,7 @@
 
 	//Sources means "sources" in the graph theory sense, no incoming edges so these have
 	//to be created from scratch, based on a Dockerfile
-	"Sources" : [
+	"Containers" : [
 		{
 			//this tag includes our go build tools (build from source) and VCS like mercurial and git
 			"Tag" : "sample1/builder",
@@ -51,7 +51,7 @@
 	"GoBuilds" : [
 		{
 			"RunIn" : "sample1/external",
-			"InstallGoPackages": [ 
+			"Packages": [ 
 				"sample1/wuclient",  //package name, not a path
 				"sample1/wuserver"   //package name, not a path
 			],
@@ -65,7 +65,7 @@
 	//XXX mount point and into the target.
 
 	//artifacts are things that are extract from one container and placed in a different one
-	"ArtifactBuilds" : [
+	"Extractions" : [
 		{
 			"RunIn" : "build", //XXXX Because this is hacky, we end up not using this
 			"MergeWith" : "sample1/runner",
