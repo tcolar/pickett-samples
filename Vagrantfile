@@ -8,7 +8,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Pickett box loaded from AWS S3 bucket
-  config.vm.box = "igneous-launcher-001"
+  config.vm.box = "igneous-launcher-003"
   config.vm.box_url = "http://igneous-dev.s3.amazonaws.com/vagrant/#{config.vm.box}.box"
 
   # Forward ports for docker (:2375) and etcd (:4001)
