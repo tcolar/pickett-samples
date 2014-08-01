@@ -1,4 +1,4 @@
-FROM sample1/runner
+FROM sample1:runner
 MAINTAINER iansmith@igenous.io
 
 ##
