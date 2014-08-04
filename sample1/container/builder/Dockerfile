@@ -30,4 +30,3 @@ RUN ./all.bash
 ENV PKG_CONFIG_PATH /opt/build/lib/pkgconfig/
 ENV LD_LIBRARY_PATH /opt/build/lib
 ENV GOROOT /opt/go
-ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/go/bin

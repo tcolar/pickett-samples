@@ -24,7 +24,7 @@
 	//use this if you want to do optimizations like --rm=false or force a build igoring
 	//cache with --no-cache=true
 	"DockerBuildOptions": {
-		"DontUseCache": true,
+		"DontUseCache": false,
 		"RemoveContainer": false
 	},
 
@@ -33,19 +33,22 @@
 	"Containers" : [
 		{
 			//this tag includes our go build tools (build from source) and VCS like mercurial and git
-			"Tag" : "sample1:builder",
+			"Repository": "sample1",
+			"Tag" : "builder",
 			"Directory" : "container/builder",  //directory, relative to this file	
 			"DependsOn" : ["sample1:runner"] 
 		},
 		{
 			//this tag includes all of our vendor (3rd party) libraries
-			"Tag" : "sample1:external",
+			"Repository": "sample1",
+			"Tag" : "external",
 			"Directory" : "container/external", //directory, relative to this file
 			"DependsOn" : [ "sample1:builder"] 
 		},
 		{
 			//base image + our system changes (curl + libzmq built from source)
-			"Tag" : "sample1:runner",
+			"Repository": "sample1",
+			"Tag" : "runner",
 			"Directory" : "container/runner" //directory, relative to this file
 		}
 	],
@@ -54,12 +57,12 @@
 	"GoBuilds" : [
 		{
 			"Repository" : "sample1",
+			"Tag": "build",
 			"RunIn" : "sample1:external",
 			"Packages": [ 
 				"sample1/wuclient",  //package name, not a path
 				"sample1/wuserver"   //package name, not a path
-			],
-			"Tag": "build"
+			]
 		}
 	],
 
@@ -67,15 +70,21 @@
 	"Extractions" : [
 		{
 			"Repository":"sample1",
-			"RunIn" : "build", //XXXX Because this is hacky, we end up not using this
+			"Tag": "candidate",
+			"RunIn" : "sample1:build", //XXXX Because this is hacky, we end up not using this
 			"MergeWith" : "sample1:runner",
-			"Artifacts": {
-				//this table maps a build artifact (a path relative to the CodeVolume
-				//declared above) to a destination artifact (path in the merge container).
-				"/sample1/bin/wuserver": "/wuserver",
-				"/sample1/bin/wuclient": "/wuclient"
-			},
-			"Tag": "candidate"
+			"Artifacts": [
+				{
+					"BuiltPath": "/sample1/bin/wuserver",
+					"IsDirectory" : false,
+					"DestinationPath": "/wuserver"
+				},
+				{
+					"BuiltPath": "/sample1/bin/wuclient",
+					"IsDirectory" : false,
+					"DestinationPath": "/wuclient"					
+				}
+			]
 		}
 	],
 	
@@ -86,13 +95,13 @@
 	"Networks" : [
 		{
 			"Name" : "weather-server", //container name will be weather-server
-			"RunIn": "candidate", //which image to boot this from
+			"RunIn": "sample1:candidate", //which image to boot this from
 			"EntryPoint" : [ "/wuserver" ], //arguments to run
 			"Policy" : "FRESH"
 		},
 		{
 			"Name" : "weather-client", //container will be weather-client
-			"RunIn" : "candidate", //image to run in has no go tooling
+			"RunIn" : "sample1:candidate", //image to run in has no go tooling
 			"EntryPoint" : [ "/wuclient", "94607" ], //made with fear and loathing in Oakland, CA
 			"Policy" : "ALWAYS",
 			"Consumes" : [ "weather-server"] //this is "linked" into this container
