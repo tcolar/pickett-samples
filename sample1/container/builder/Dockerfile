@@ -22,6 +22,8 @@ RUN hg clone -u release https://code.google.com/p/go
 WORKDIR /opt/go/src
 RUN ./all.bash
 
+RUN ln -s /opt/go/bin/go /usr/bin/go
+
 #
 # These env vars are needed by various build-related activities. This does not
 # include GOPATH, that's set in external.
