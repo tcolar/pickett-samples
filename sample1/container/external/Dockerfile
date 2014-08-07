@@ -7,8 +7,9 @@ MAINTAINER iansmith@igneous.io
 ## TRICKY: We set GOPATH to include the directory where our source code will
 ## TRICKY: be mounted by our Pickett.json.  
 ##
+RUN apk add -U bash pkgconfig 
 
-COPY update.sh /update.sh
+ADD ./update.sh /update.sh
 RUN chmod +x /update.sh
 ENV GOPATH /vendor:/sample1  
 
